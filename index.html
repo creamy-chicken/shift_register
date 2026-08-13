@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shift Register Mini Project</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="scroll-meter" aria-hidden="true"></div>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-shade" aria-hidden="true"></div>
+
+        <div class="hero-content" data-reveal>
+          <h1 id="hero-title">
+            <span>Shift</span>
+            <span>Register</span>
+            <span>Mini</span>
+            <span>Project</span>
+          </h1>
+          <p class="hero-byline">By Dasha Katkova</p>
+        </div>
+
+        <section class="showcase-workbench" aria-label="Hero project image" data-reveal>
+          <div class="hero-visual-note hero-photo">
+            <img src="shiftregister.jpg" alt="Breadboard shift register project with LEDs lit up" />
+          </div>
+        </section>
+      </section>
+
+      <section id="overview" class="section intro-grid">
+        <div class="section-copy" data-reveal>
+          <p class="section-kicker">Project snapshot</p>
+          <h2 class="balanced-heading">
+            <span>LED control using</span>
+            <span>a shift register</span>
+          </h2>
+          <p>
+            I made this project to learn about shift registers. Shift registers help use fewer pins by indirectly
+            powering something like an LED. Instead of saying "low" or "high", you pass a binary.
+          </p>
+        </div>
+
+        <div class="materials-panel" data-reveal>
+          <p>The materials I used are:</p>
+          <ul>
+            <li>74HC595 shift register</li>
+            <li>8 LEDs</li>
+            <li>8 220 &Omega; resistors</li>
+            <li>Arduino Nano microcontroller</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="code" class="section code-section" aria-labelledby="code-title">
+        <div class="section-copy" data-reveal>
+          <p class="section-kicker">Code</p>
+          <h2 id="code-title">Three LED patterns</h2>
+        </div>
+
+        <div class="code-window code-carousel" data-code-carousel data-reveal>
+          <div class="window-bar code-window-bar">
+            <div class="window-dots" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p data-code-title>Binary counter code</p>
+            <div class="code-controls">
+              <button type="button" data-code-previous aria-label="Previous code">&larr;</button>
+              <span data-code-count>1 / 3</span>
+              <button type="button" data-code-next aria-label="Next code">&rarr;</button>
+            </div>
+          </div>
+
+          <div class="code-frame">
+            <pre class="code-slide is-active" data-code-slide data-title="Binary counter code"><code>#include &lt;Arduino.h&gt;
+
+int latchPin = 12; // Latch pin of 74HC595 is connected to Digital pin 12
+int clockPin = 13; // Clock pin of 74HC595 is connected to Digital pin 13
+int dataPin = 11;  // Data pin of 74HC595 is connected to Digital pin 11
+
+byte leds = 0; // Variable to hold the pattern of which LEDs are currently turned on or off
+
+void updateShiftRegister();
+
+void setup()
+{
+  // Set all the pins of 74HC595 as OUTPUT
+  pinMode(latchPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  delay(1000);
+}
+
+void loop()
+{
+  leds = 0; // Initially turns all the LEDs off, by giving the variable 'leds' the value 0
+  updateShiftRegister();
+  delay(500);
+  for (int i = 0; i &lt; 255; i++) // Turn all the LEDs ON one by one.
+  {
+    leds = i; // Set the variable 'leds' to the value of 'i'
+    updateShiftRegister();
+    delay(200);
+  }
+}
+
+/*
+ This function sets the latchPin to low, then calls the Arduino function 'shiftOut'
+ to shift out contents of variable 'leds' in the shift register before putting the 'latchPin' high again.
+ */
+void updateShiftRegister()
+{
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, LSBFIRST, leds);
+  digitalWrite(latchPin, HIGH);
+}</code></pre>
+
+            <pre class="code-slide" data-code-slide data-title="Stacking code"><code>#include &lt;Arduino.h&gt;
+
+int latchPin = 12; // Latch pin of 74HC595 is connected to Digital pin 12
+int clockPin = 13; // Clock pin of 74HC595 is connected to Digital pin 13
+int dataPin = 11;  // Data pin of 74HC595 is connected to Digital pin 11
+
+byte leds = 0; // Variable to hold the pattern of which LEDs are currently turned on or off
+
+void updateShiftRegister();
+
+void setup()
+{
+  // Set all the pins of 74HC595 as OUTPUT
+  pinMode(latchPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  delay(1000);
+}
+
+void loop()
+{
+  leds = 0; // Initially turns all the LEDs off, by giving the variable 'leds' the value 0
+  updateShiftRegister();
+  delay(500);
+  for (int i = 0; i &lt; 8; i++) // Turn all the LEDs ON one by one.
+  {
+    bitSet(leds, i); // Set the bit that controls that LED in the variable 'leds'
+    updateShiftRegister();
+    delay(500);
+  }
+}
+
+/*
+ This function sets the latchPin to low, then calls the Arduino function 'shiftOut'
+ to shift out contents of variable 'leds' in the shift register before putting the 'latchPin' high again.
+ */
+void updateShiftRegister()
+{
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, LSBFIRST, leds);
+  digitalWrite(latchPin, HIGH);
+}</code></pre>
+
+            <pre class="code-slide" data-code-slide data-title="Random code"><code>#include &lt;Arduino.h&gt;
+
+int latchPin = 12; // Latch pin of 74HC595 is connected to Digital pin 12
+int clockPin = 13; // Clock pin of 74HC595 is connected to Digital pin 13
+int dataPin = 11;  // Data pin of 74HC595 is connected to Digital pin 11
+
+byte leds;
+
+void updateShiftRegister();
+
+void setup()
+{
+  // Set all the pins of 74HC595 as OUTPUT
+  pinMode(latchPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+}
+
+void loop()
+{
+  leds = random(0, 256);
+  updateShiftRegister();
+  delay(500);
+}
+
+/*
+ This function sets the latchPin to low, then calls the Arduino function 'shiftOut'
+ to shift out contents of variable 'leds' in the shift register before putting the 'latchPin' high again.
+ */
+
+void updateShiftRegister()
+{
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, LSBFIRST, leds);
+  digitalWrite(latchPin, HIGH);
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="process" class="process-section" aria-label="Build process">
+        <article class="process-entry" data-reveal>
+          <p class="process-copy">
+            I began with finding a 74HC595 shift register. Then I connected it to my microcontroller. I made sure that I
+            wired the pins of the shift register correctly by using a data sheet.
+          </p>
+          <div class="process-media">
+            <img class="diagram-media" src="pinout.png" alt="74HC595 shift register pinout diagram" loading="lazy" />
+          </div>
+        </article>
+
+        <article class="process-entry" data-reveal>
+          <p class="process-copy">
+            By using a USB to TTL converter, I could transfer my program into the microcontroller.
+          </p>
+          <div class="process-media">
+            <img
+              class="rotated-photo"
+              src="microcontroller-rotated.jpg"
+              alt="Arduino Nano connected to the shift register circuit"
+              loading="lazy"
+            />
+          </div>
+        </article>
+
+        <article class="process-entry" data-reveal>
+          <p class="process-copy">
+            I made three different distinct patterns: a binary counter, a stacking effect, and an effect where a random
+            set of LEDs light up.
+          </p>
+          <div class="process-media">
+            <img
+              class="rotated-photo"
+              src="Closeup-rotated.jpg"
+              alt="Close-up of LEDs on the breadboard shift register circuit"
+              loading="lazy"
+            />
+          </div>
+        </article>
+
+        <article class="process-entry" data-reveal>
+          <p class="process-copy">This is the binary counter.</p>
+          <div class="process-media">
+            <video src="binaryCount-rotated.mp4" controls preload="metadata" playsinline></video>
+          </div>
+        </article>
+
+        <article class="process-entry" data-reveal>
+          <p class="process-copy">This is the stacking effect.</p>
+          <div class="process-media">
+            <video src="stack.mp4" controls preload="metadata" playsinline></video>
+          </div>
+        </article>
+
+        <article class="process-entry" data-reveal>
+          <p class="process-copy">This is the random effect.</p>
+          <div class="process-media">
+            <video src="random.mp4" controls preload="metadata" playsinline></video>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Shift Register Mini Project</p>
+      <a href="#top">Back to top</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
